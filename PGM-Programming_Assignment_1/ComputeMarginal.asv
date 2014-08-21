@@ -30,8 +30,7 @@ end
 % M = struct('var', [], 'card', [], 'val', []);
 M = ComputeJointDistribution(F);
 M = ObserveEvidence(M, E);
-M = FactorMarginalization(M, setdiff(M.var, V));
-M.val = M.val / sum(M.val);
+setdiff(M.var, V);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 M = StandardizeFactors(M);
