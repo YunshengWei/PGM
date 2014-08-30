@@ -47,11 +47,11 @@ if (~isempty(pairwiseModel))
     % Once you've tested out ComputeEqualPairwiseFactors, as discussed in
     % the assignment handout, you should comment out that line and
     % uncomment the following line to use the "real" pairwise factor
-    % implementation (which you must provide.
+    % implementation (which you must provide).
     %%%%%%%%%%%%%%%%%%%%%%%%%%%
     
-    pairwiseFactors = ComputeEqualPairwiseFactors(images, imageModel.K);
-    %pairwiseFactors = ComputePairwiseFactors(images, pairwiseModel, imageModel.K);
+    %pairwiseFactors = ComputeEqualPairwiseFactors(images, imageModel.K);
+    pairwiseFactors = ComputePairwiseFactors(images, pairwiseModel, imageModel.K);
 else
     pairwiseFactors = [];
 end

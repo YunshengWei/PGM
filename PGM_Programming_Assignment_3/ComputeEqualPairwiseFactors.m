@@ -16,8 +16,19 @@ function factors = ComputeEqualPairwiseFactors (images, K)
 
 n = length(images);
 
+if n < 2
+    factors = [];
+    return;
+end
+
 factors = repmat(struct('var', [], 'card', [], 'val', []), n - 1, 1);
 
 % Your code here:
+
+for i = 1:n - 1
+    factors(i).var = [i, i + 1];
+    factors(i).card = [K, K];
+    factors(i).val = ones(1, prod(factors(i).card));
+end
 
 end

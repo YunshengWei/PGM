@@ -20,6 +20,12 @@ nFactors = nchoosek (n, 2);
 factors = repmat(struct('var', [], 'card', [], 'val', []), nFactors, 1);
 
 % Your code here:
-
+count = 1;
+for i = 1:n - 1
+   for j = i + 1:n
+       factors(count) = ComputeSimilarityFactor(images, K, i, j);
+       count = count + 1;
+   end
+end
 end
 

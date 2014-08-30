@@ -21,8 +21,11 @@ function factors = ComputeSingletonFactors (images, imageModel)
 n = length(images);
 
 % Preallocate the array of factors
-factors = repmat(struct('var', [], 'card', [], 'val', []), n, 1);
+factors = repmat(struct('var', [], 'card', imageModel.K, 'val', []), n, 1);
 
 % Your code here:
-
+for i = 1:n
+    factors(i).var = i;
+    factors(i).val = ComputeImageFactor(images(i).img, imageModel);
+end
 end

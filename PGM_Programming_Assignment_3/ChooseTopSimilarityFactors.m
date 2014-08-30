@@ -23,7 +23,13 @@ if (length(allFactors) <= F)
 end
 
 % Your code here:
-factors = allFactors; %%% REMOVE THIS LINE
+sims = zeros(length(allFactors), 1);
+for i = 1:length(allFactors)
+    sims(i) = allFactors(i).val(1);
+end
+
+[~, I] = sort(sims, 1, 'descend');
+factors = allFactors(I(1:F));
 
 end
 

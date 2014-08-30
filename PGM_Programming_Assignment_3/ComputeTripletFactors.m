@@ -28,5 +28,15 @@ end
 factors = repmat(struct('var', [], 'card', [], 'val', []), n - 2, 1);
 
 % Your code here:
+val = ones(1, K * K * K);
+for i = 1:length(tripletList)
+    val(AssignmentToIndex(tripletList(i).chars, [K, K, K])) = tripletList(i).factorVal;
+end
+
+for i = 1:n - 2
+    factors(i).var = [i, i + 1, i + 2];
+    factors(i).card = [K, K, K];
+    factors(i).val = val;
+end
 
 end
