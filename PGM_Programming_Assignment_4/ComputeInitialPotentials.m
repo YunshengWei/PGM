@@ -41,5 +41,24 @@ P.edges = zeros(N);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
+P.edges = C.edges;
+used = zeros(size(C.factorList));
+
+for i = 1:N
+    P.cliqueList(i).var = C.nodes{i};
+    P.cliqueList(i).card = C.card(C.node{i});
+    
+    tmpFactor = struct('var', [], 'card', [], 'val', []);
+    for j = 1:length(C.factorList)
+        if used(j) == 0 && all(ismember(C.factorList{j}.var, P.cliqueList{i}.var)) == 1
+            tmpFactor = FactorProduct(tmpFactor, C.factorList{j});
+            used(j) = 1;
+        end
+    end
+    if ~isem(tmpFactor.val)
+        P.cliqueList(i).val = tmpFactor.val;
+    end
+end
+    
 end
 
