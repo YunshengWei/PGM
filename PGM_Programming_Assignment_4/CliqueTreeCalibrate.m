@@ -11,6 +11,17 @@
 
 function P = CliqueTreeCalibrate(P, isMax)
 
+if ~exist('isMax', 'var') || isempty(isMax)
+    isMax = false;
+end
+
+if isMax
+    op1 = @FactorSum;
+    op2 = @FactorMaxMarginalization;
+else
+    op1 = @FactorProduct;
+    op2 = @FactorMarginalization;
+end
 
 % Number of cliques in the tree.
 N = length(P.cliqueList);
@@ -37,16 +48,24 @@ MESSAGES = repmat(struct('var', [], 'card', [], 'val', []), N, N);
 %
  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+if isMax
+    for i = 1:length(P.cliqueList)
+        P.cliqueList(i).val = log(P.cliqueList(i).val);
+    end
+end
+
 [i, j] = GetNextCliques(P, MESSAGES);
 while i ~= 0 && j ~= 0
     dests = setdiff(find(P.edges(i, :) == 1), j);
     MESSAGES(i, j) = P.cliqueList(i);
     for k = 1:length(dests)
-        MESSAGES(i, j) = FactorProduct(MESSAGES(i, j), MESSAGES(dests(k), i));
+        MESSAGES(i, j) = op1(MESSAGES(i, j), MESSAGES(dests(k), i));
     end
-    MESSAGES(i, j) = FactorMarginalization(MESSAGES(i, j), ...
+    MESSAGES(i, j) = op2(MESSAGES(i, j), ...
                      setdiff(P.cliqueList(i).var, P.cliqueList(j).var));
-    MESSAGES(i, j).val = MESSAGES(i, j).val / sum(MESSAGES(i, j).val);
+    if ~isMax
+        MESSAGES(i, j).val = MESSAGES(i, j).val / sum(MESSAGES(i, j).val);
+    end
     [i, j] = GetNextCliques(P, MESSAGES);
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -59,8 +78,9 @@ end
 for i = 1:length(P.cliqueList)
     dests = find(P.edges(i, :) == 1);
     for j = 1:length(dests)
-        P.cliqueList(i) = FactorProduct(P.cliqueList(i), MESSAGES(dests(j), i));
+        P.cliqueList(i) = op1(P.cliqueList(i), MESSAGES(dests(j), i));
     end
 end
 
 return
+

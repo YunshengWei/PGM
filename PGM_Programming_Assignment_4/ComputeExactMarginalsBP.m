@@ -14,6 +14,18 @@
 
 function M = ComputeExactMarginalsBP(F, E, isMax)
 
+if ~exist('isMax', 'var') || isempty(isMax)
+    isMax = false;
+end
+
+if isMax
+    op1 = @FactorSum;
+    op2 = @FactorMaxMarginalization;
+else
+    op1 = @FactorProduct;
+    op2 = @FactorMarginalization;
+end
+
 % initialization
 % you should set it to the correct value in your code
 M = [];
@@ -31,9 +43,11 @@ for i = 1:length(vars)
     var = vars(i);
     for j = 1:length(P.cliqueList)
         if ismember(var, P.cliqueList(j).var)
-            M(i) = FactorMarginalization(P.cliqueList(j), ...
+            M(i) = op2(P.cliqueList(j), ...
                    setdiff(P.cliqueList(j).var, var));
-            M(i).val = M(i).val / sum(M(i).val);
+            if ~isMax
+                M(i).val = M(i).val / sum(M(i).val);
+            end
             break
         end
     end
