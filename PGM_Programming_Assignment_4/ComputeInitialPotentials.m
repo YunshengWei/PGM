@@ -43,21 +43,26 @@ P.edges = zeros(N);
 
 P.edges = C.edges;
 used = zeros(size(C.factorList));
+[~, ia] = unique([C.factorList.var], 'sorted');
+cards = [C.factorList.card];
+cards = cards(ia);
 
 for i = 1:N
     P.cliqueList(i).var = C.nodes{i};
-    P.cliqueList(i).card = C.card(C.node{i});
+    P.cliqueList(i).card = cards(C.nodes{i});
     
     tmpFactor = struct('var', [], 'card', [], 'val', []);
+    tmpFactor.var = P.cliqueList(i).var;
+    tmpFactor.card = P.cliqueList(i).card;
+    tmpFactor.val = ones(1, prod(P.cliqueList(i).card));
     for j = 1:length(C.factorList)
-        if used(j) == 0 && all(ismember(C.factorList{j}.var, P.cliqueList{i}.var)) == 1
-            tmpFactor = FactorProduct(tmpFactor, C.factorList{j});
+        if used(j) == 0 && all(ismember(C.factorList(j).var, P.cliqueList(i).var)) == 1
+            tmpFactor = FactorProduct(tmpFactor, C.factorList(j));
             used(j) = 1;
         end
     end
-    if ~isem(tmpFactor.val)
-        P.cliqueList(i).val = tmpFactor.val;
-    end
+    
+    P.cliqueList(i).val = tmpFactor.val;
 end
     
 end
