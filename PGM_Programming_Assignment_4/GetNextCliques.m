@@ -33,7 +33,29 @@ j = 0;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % YOUR CODE HERE
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+N = size(messages, 1);
+for s = 1:N
+    for t = 1:N
+        if P.edges(s, t) == 1 && isempty(messages(s, t).var)
+            dests = find(P.edges(s, :) == 1);
+            dests = setdiff(dests, t);
+            if allPassed(s, dests, messages)
+                i = s;
+                j = t;
+                return;
+            end
+        end
+    end
+end
 
+end
 
-
-return;
+function flag = allPassed(s, t, messages)
+    flag = true;
+    for i = 1:length(t)
+        if isempty(messages(t(i), s).var)
+            flag = false;
+            return;
+        end
+    end
+end
