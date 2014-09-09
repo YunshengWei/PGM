@@ -34,7 +34,23 @@ end;
 % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+P.clusterList = F;
+P.edges = zeros(length(P.clusterList));
 
+varMap = size(max([P.clusterList.var]), 1);
+for i = 1:length(P.clusterList)
+    if length(P.clusterList(i).var) == 1
+        varMap(P.clusterList(i).var) = i;
+    end
+end
+for i = 1:length(P.clusterList)
+    if length(P.clusterList(i).var) > 1
+        for j = 1:length(P.clusterList(i).var)
+            P.edges(varMap(P.clusterList(i).var(j)), i) = 1;
+            P.edges(i, varMap(P.clusterList(i).var(j))) = 1;
+        end
+    end
+end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

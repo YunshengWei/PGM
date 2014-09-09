@@ -23,9 +23,13 @@ thresh = 1.0e-6;
 % YOUR CODE HERE
 % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
+numMessages = numel(mNew);
+for i = 1:numMessages
+    if any(abs(mNew(i).val - mOld(i).val) > thresh)
+        converged = false;
+        return
+    end
+end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 return;
