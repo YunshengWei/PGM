@@ -28,7 +28,7 @@ on_diagonal = 0.2;
 off_diagonal = 1;
 
 % Directory to save the plots into, change to your output path
-plotsdir = "./plots_test";
+plotsdir = './plots_test';
 
 start = time;
 
