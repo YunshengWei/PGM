@@ -256,7 +256,7 @@ function ret = isValidPartId(partId)
 end
 
 function partId = promptPart()
-  fprintf('== Testinf Programming assignment ¹ %s\n', homework_id());
+  fprintf('== Testinf Programming assignment ?%s\n', homework_id());
   fprintf('== Select which part(s) to test:\n');
   partNames = validParts();
   srcFiles = sources();
