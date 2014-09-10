@@ -12,8 +12,8 @@ for i = 1:length(V),
 end
 
 % This color scheme works in octave. For Matlab replace with
-colors = ['r', 'g', 'b', 'k', 'm', '--b']; 
-% colors = ['1', '2', '3', '4', '5', '6'];
+% colors = ['r', 'g', 'b', 'k', 'm', '--b']; 
+colors = ['1', '2', '3', '4', '5', '6'];
 
 figure('visible', 'off')
 
@@ -27,8 +27,8 @@ for i = 1:length(V)
         dat = (cumsum(samples_v - 1)' ./ (1:length(samples_v))) - M.val(2);
 
         % if the following line fails in Matlab, replace it with
-        plot(1:length(dat), dat, colors(mod(cnt,6)+1),'LineWidth', 2);
-        % plot(1:length(dat), dat, 'LineWidth', 2, colors(mod(cnt,6)+1));
+        % plot(1:length(dat), dat, colors(mod(cnt,6)+1),'LineWidth', 2);
+        plot(1:length(dat), dat, 'LineWidth', 2, colors(mod(cnt,6)+1));
         cnt = cnt + 1;
         hold on;
     end

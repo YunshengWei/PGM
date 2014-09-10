@@ -24,8 +24,8 @@ rand('seed', 1);
 num_chains_to_run = 3;
 mix_time = 400;
 collect = 6000;
-on_diagonal = 0.2;
-off_diagonal = 1;
+on_diagonal = 1;
+off_diagonal = 0.2;
 
 % Directory to save the plots into, change to your output path
 plotsdir = './plots_test';
