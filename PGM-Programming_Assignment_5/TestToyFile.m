@@ -102,13 +102,13 @@ VisualizeErrors(plotsdir, errors, mix_time, transition_names);
 
 elapsed = time - start;
 
-fname = [plotsdir, "/report.txt"];
+fname = [plotsdir, '/report.txt'];
 file = fopen(fname, 'a');
 fdisp(file, ['On diag: ', num2str(on_diagonal),
              'Off diag: ', num2str(off_diagonal),
              'Mix time: ', num2str(mix_time),
-             "Collect: ", num2str(collect),
-             "Time consumed: ", num2str(elapsed), " sec."]);
+             'Collect: ', num2str(collect),
+             'Time consumed: ', num2str(elapsed), ' sec.']);
 fclose(file);
 
-disp(["Done, time consumed: ", num2str(elapsed), " sec."]);
+disp(['Done, time consumed: ', num2str(elapsed), ' sec.']);
