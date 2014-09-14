@@ -20,6 +20,10 @@ function EU = SimpleCalcExpectedUtility(I)
   %
   % YOUR CODE HERE
   %
+  U.var = [U.var, max([F.var]) + 1];
+  U.card = [U.card, 1];
+  EU = VariableElimination([F U], unique([F.var]));
+  EU = EU.val;
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
  
