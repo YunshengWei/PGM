@@ -26,8 +26,24 @@ function [MEU OptimalDecisionRule] = OptimizeLinearExpectations( I )
   % a degenerate case we can handle separately for convenience.
   %
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  
-
+  EUF = CalculateExpectedUtilityFactor(I);
+  mu = struct('var', [], 'card', [], 'val', []);
+  for i = 1:length(EUF)
+      mu = FactorSum(mu, EUF(i));
+  end
+  D = I.DecisionFactors;
+  mu = ReorderFactorVars(mu, D.var);
+  MEU = 0;
+  OptimalDecisionRule = D;
+  OptimalDecisionRule.val = zeros(1, prod(OptimalDecisionRule.card));
+  % potential bug here!
+  for i = 1:prod(D.card(2:end))
+      head = (i - 1) * D.card(1) + 1;
+      tail = i * D.card(1);
+      [Y, I] = max(mu.val(head:tail));
+      OptimalDecisionRule.val(I + head - 1) = 1;
+      MEU = MEU + Y;
+  end
 
 
 end

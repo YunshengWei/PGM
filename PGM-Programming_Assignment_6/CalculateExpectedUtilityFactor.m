@@ -11,17 +11,19 @@ function EUF = CalculateExpectedUtilityFactor( I )
   % gives the conditional utility given each assignment for D.var
   %
   % Note - We assume I has a single decision node and utility node.
-  EUF = zeros(1, prod(I.DecisionFactors.card));
+  EUF = repmat(struct('var', [], 'card', [], 'val', []), length(I.UtilityFactors), 1);
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   %
   % YOUR CODE HERE...
   %
-  F = [I.RandomFactors, I.UtilityFactors];
   D = I.DecisionFactors;
-  mu = VariableElimination(F, setdiff([F.var], D.var));
-  EUF = struct('var', [], 'card', [], 'val', []);
-  for i = 1:length(mu)
-    EUF = FactorProduct(EUF, mu(i));
+  for k = 1:length(I.UtilityFactors)
+      F = [I.RandomFactors, I.UtilityFactors(k)];
+      mu = VariableElimination(F, setdiff([F.var], D.var));
+      EUF(k) = struct('var', [], 'card', [], 'val', []);
+      for i = 1:length(mu)
+        EUF(k) = FactorProduct(EUF(k), mu(i));
+      end
   end
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
 
