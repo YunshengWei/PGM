@@ -104,7 +104,9 @@ function [P, logZ] = CliqueTreeCalibrate(P, isMax)
     % logZ, the log of the partition function.
     if (doLogZ)
         %%% YOUR CODE HERE:
-        logZ = 
+        unsb = FactorProduct(unnormalizedMessages(lastCliqueOne, lastCliqueTwo), ...
+                             unnormalizedMessages(lastCliqueTwo, lastCliqueOne));
+        logZ = log(sum(unsb.val));
     else
         logZ = 0;
     end
