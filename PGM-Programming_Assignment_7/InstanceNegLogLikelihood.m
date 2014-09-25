@@ -36,8 +36,8 @@ function [nll, grad] = InstanceNegLogLikelihood(X, y, theta, modelParams)
     %   
     %   feature = struct('var', [2 3], 'assignment', [5 6], 'paramIdx', 8);
     %
-    % then feature is an indicator function over X_2 and X_3, which takes on a value of 1
-    % if X_2 = 5 and X_3 = 6 (which would be 'e' and 'f'), and 0 otherwise. 
+    % then feature is an indicator function over Y_2 and Y_3, which takes on a value of 1
+    % if Y_2 = 5 and Y_3 = 6 (which would be 'e' and 'f'), and 0 otherwise. 
     % Its contribution to the log-likelihood would be theta(8) if it's 1, and 0 otherwise.
     %
     % If you're interested in the implementation details of CRFs, 
@@ -58,8 +58,56 @@ function [nll, grad] = InstanceNegLogLikelihood(X, y, theta, modelParams)
     
     nll = 0;
     grad = zeros(size(theta));
+    theta = theta(:);
     %%%
     % Your code here:
-    
+    numCharacters = length(y);
+    card = [modelParams.numHiddenStates modelParams.numHiddenStates];
+    singletonFactors = repmat(struct('var', [], 'card', [], 'val', []), numCharacters, 1);
+    pairwiseFactors = repmat(struct('var', [], 'card', [], 'val', []), numCharacters - 1, 1);
+    for i = 1:numCharacters
+        singletonFactors(i).var = i;
+        singletonFactors(i).card = modelParams.numHiddenStates;
+        singletonFactors(i).val = zeros(1, prod(singletonFactors(i).card));
+    end
+    for i = 1:numCharacters - 1
+        pairwiseFactors(i).var = [i, i + 1];
+        pairwiseFactors(i).card = card;
+        pairwiseFactors(i).val = zeros(1, prod(pairwiseFactors(i).card));
+    end
 
+    
+    for i = 1:length(featureSet.features)
+        feature = featureSet.features(i);
+        var = feature.var;
+        assignment = feature.assignment;
+        if length(var) == 1
+            singletonFactors(var).val(assignment) = ...
+                singletonFactors(var).val(assignment) ...
+                + theta(feature.paramIdx);
+        elseif length(var) == 2
+            % var should be [k, k+1]
+            id = AssignmentToIndex(assignment, card);
+            pairwiseFactors(var(1)).val(id) = ...
+                pairwiseFactors(var(1)).val(id) ...
+                + theta(feature.paramIdx);
+        else
+            error('Factors must be eithor singleton or pairwise.');
+        end
+        if isequal(y(var), assignment)
+            nll = nll - theta(feature.paramIdx);
+        end
+    end
+    for i = 1:length(singletonFactors)
+        singletonFactors(i).val = exp(singletonFactors(i).val);
+    end
+    for i = 1:length(pairwiseFactors)
+        pairwiseFactors(i).val = exp(pairwiseFactors(i).val);
+    end
+     
+    factors = [singletonFactors; pairwiseFactors];
+    P = CreateCliqueTree(factors);
+    [P, logZ] = CliqueTreeCalibrate(P, false);
+    nll = nll + logZ + modelParams.lambda / 2 * (theta' * theta);
+    
 end
