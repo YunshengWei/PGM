@@ -36,8 +36,10 @@ function thetaOpt = StochasticGradientDescent (gradFunc, theta0, maxIter)
     %%%%%%%%%%%%%%
     %%% Student code
     for i = 1:maxIter
+        fprintf('iteration %d\n', i);
         [~, grad] = gradFunc(thetaOpt, i);
-        alpha = 0.1 / (1 + sqrt(i));
+        %alpha = 0.1 / (1 + sqrt(i));
+        alpha = 1 / (1 + 0.05 * i);
         thetaOpt = thetaOpt - alpha * grad;
     end
     %%%%%%%%%%%

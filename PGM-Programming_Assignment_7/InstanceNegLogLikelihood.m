@@ -6,7 +6,7 @@
 % X            Data.                           (numCharacters x numImageFeatures matrix)
 %              X(:,1) is all ones, i.e., it encodes the intercept/bias term.
 % y            Data labels.                    (numCharacters x 1 vector)
-% theta        CRF weights/parameters.         (numParams x 1 vector)
+% theta        CRF weights/parameters.         (1 x numParams vector)
 %              These are shared among the various singleton / pairwise features.
 % modelParams  Struct with three fields:
 %   .numHiddenStates     in our case, set to 26 (26 possible characters)
@@ -57,8 +57,6 @@ function [nll, grad] = InstanceNegLogLikelihood(X, y, theta, modelParams)
     %       if you want to use it to compute logZ.
     
     nll = 0;
-    grad = zeros(size(theta));
-    theta = theta(:);
     %%%
     % Your code here:
     numCharacters = length(y);
@@ -110,4 +108,43 @@ function [nll, grad] = InstanceNegLogLikelihood(X, y, theta, modelParams)
     [P, logZ] = CliqueTreeCalibrate(P, false);
     nll = nll + logZ + modelParams.lambda / 2 * (theta' * theta);
     
+    grad = modelParams.lambda * theta;
+    singletonMarginals = repmat(struct('var', 0, 'card', 0, 'val', []), length(y), 1);
+    for i = 1:length(y)
+        clique = struct('var', 0, 'card', 0, 'val', []);
+        currentVar = i;
+        for j = 1:length(P.cliqueList)
+            % Find a clique with the variable of interest
+            if ~isempty(find(ismember(P.cliqueList(j).var, currentVar), 1))
+                % A clique with the variable has been indentified
+                clique = P.cliqueList(j);
+                break
+            end
+        end
+        singletonMarginals(i) = FactorMarginalization(clique, setdiff(clique.var, currentVar));
+        if any(singletonMarginals(i).val ~= 0)
+            % Normalize
+            singletonMarginals(i).val = singletonMarginals(i).val/sum(singletonMarginals(i).val);
+        end
+    end
+    pairwiseMarginals = repmat(struct('var', 0, 'card', 0, 'val', []), length(y) - 1, 1);
+    for i = 1:length(P.cliqueList)
+        idx = P.cliqueList(i).var(1);
+        pairwiseMarginals(idx) = P.cliqueList(i);
+        pairwiseMarginals(idx).val = pairwiseMarginals(idx).val / sum(pairwiseMarginals(idx).val);
+    end
+    
+    for i = 1:length(featureSet.features)
+        feature = featureSet.features(i);
+        featureVal = isequal(feature.assignment, y(feature.var));
+        grad(feature.paramIdx) = grad(feature.paramIdx) - featureVal;
+        if length(feature.var) == 1
+            expected = singletonMarginals(feature.var).val(...
+                AssignmentToIndex(feature.assignment, modelParams.numHiddenStates));
+        else
+            expected = pairwiseMarginals(feature.var(1)).val(...
+                AssignmentToIndex(feature.assignment, card));
+        end
+        grad(feature.paramIdx) = grad(feature.paramIdx) + expected;
+    end
 end
