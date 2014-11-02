@@ -14,10 +14,47 @@ function accuracy = ClassifyDataset(dataset, labels, P, G)
 % Copyright (C) Daphne Koller, Stanford Univerity, 2012
 
 N = size(dataset, 1);
-accuracy = 0.0;
+K = size(labels, 2);
+Q = size(G, 1);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % YOUR CODE HERE
+correct = 0;
+
+for i = 1:N
+    probs = zeros(K, 1);
+    for j = 1:K
+        prob = log(P.c(j));
+        for k = 1:Q
+            if G(k, 1) == 0
+                prob = prob + lognormpdf(dataset(i, k, 1), ...
+                       P.clg(k).mu_y(j), P.clg(k).sigma_y(j));
+                prob = prob + lognormpdf(dataset(i, k, 2), ...
+                       P.clg(k).mu_x(j), P.clg(k).sigma_x(j));
+                prob = prob + lognormpdf(dataset(i, k, 3), ...
+                       P.clg(k).mu_angle(j), P.clg(k).sigma_angle(j));
+            else
+                pa = G(k, 2);
+                prob = prob + lognormpdf(dataset(i, k, 1), ...
+                       P.clg(k).theta(j, 1:4) * ...
+                       [1; squeeze(dataset(i, pa, :))], P.clg(k).sigma_y(j));
+                prob = prob + lognormpdf(dataset(i, k, 2), ...
+                       P.clg(k).theta(j, 5:8) * ...
+                       [1; squeeze(dataset(i, pa, :))], P.clg(k).sigma_x(j));
+                prob = prob + lognormpdf(dataset(i, k, 3), ...
+                       P.clg(k).theta(j, 9:12) * ...
+                       [1; squeeze(dataset(i, pa, :))], P.clg(k).sigma_angle(j));
+            end
+        end
+        probs(j) = prob;
+    end
+    [~, predict] = max(probs);
+    if labels(i, predict) == 1
+        correct = correct + 1;
+    end
+end
+
+accuracy = correct / N;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 fprintf('Accuracy: %.2f\n', accuracy);
