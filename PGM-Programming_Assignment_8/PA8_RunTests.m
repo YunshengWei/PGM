@@ -4,7 +4,7 @@ function PA8_RunTests()
   load PA8SampleCases
   load PA8Data
   
-  turnOnVisualizations = false;
+  turnOnVisualizations = true; %%%
   
   constTOL = 1e-6;
   
@@ -158,7 +158,7 @@ function ret = isValidPartId(partId)
 end
 
 function partId = promptPart()
-  fprintf('== Testinf Programming assignment ¹ %s\n', homework_id());
+  fprintf('== Testinf Programming assignment ?%s\n', homework_id());
   fprintf('== Select which part(s) to test:\n');
   partNames = validParts();
   srcFiles = sources();

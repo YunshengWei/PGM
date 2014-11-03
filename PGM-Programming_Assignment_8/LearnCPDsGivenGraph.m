@@ -29,11 +29,26 @@ P.clg = repmat(struct('mu_y', [], 'sigma_y', [], ...
 %%%%%%%%%%%%%%%%%%%%%%%%%
 % YOUR CODE HERE
 P.c = mean(labels);
+shared = true;
+if length(size(G)) == 3
+    shared = false;
+end
+
 for i = 1:Q
     for j = 1:K
         data_subset = dataset(logical(labels(:, j)), :, :);
         data_subset_i = squeeze(data_subset(:, i, :));
-        if G(i, 1) == 0
+        pa = 0;
+        if shared
+            if G(i, 1) ~= 0
+                pa = G(i, 2);
+            end
+        else
+            if G(i, 1, j) ~= 0
+                pa = G(i, 2, j);
+            end
+        end
+        if pa == 0
             mu = mean(data_subset_i);
             P.clg(i).mu_y(j) = mu(1);
             P.clg(i).mu_x(j) = mu(2);
@@ -43,7 +58,6 @@ for i = 1:Q
             P.clg(i).sigma_x(j) = sigma(2);
             P.clg(i).sigma_angle(j) = sigma(3);
         else
-            pa = G(i, 2);
             data_subset_pa = squeeze(data_subset(:, pa, :));
             [P.clg(i).theta(j, [2, 3, 4, 1]), P.clg(i).sigma_y(j)] = ...
                 FitLinearGaussianParameters(data_subset_i(:, 1), data_subset_pa);

@@ -21,12 +21,27 @@ Q = size(G, 1);
 % YOUR CODE HERE
 correct = 0;
 
+shared = true;
+if length(size(G)) == 3
+    shared = false;
+end
+
 for i = 1:N
     probs = zeros(K, 1);
     for j = 1:K
         prob = log(P.c(j));
         for k = 1:Q
-            if G(k, 1) == 0
+            pa = 0;
+            if shared
+                if G(k, 1) ~= 0
+                    pa = G(k, 2);
+                end
+            else
+                if G(k, 1, j) ~= 0
+                    pa = G(k, 2, j);
+                end
+            end
+            if pa == 0
                 prob = prob + lognormpdf(dataset(i, k, 1), ...
                        P.clg(k).mu_y(j), P.clg(k).sigma_y(j));
                 prob = prob + lognormpdf(dataset(i, k, 2), ...
@@ -34,7 +49,6 @@ for i = 1:N
                 prob = prob + lognormpdf(dataset(i, k, 3), ...
                        P.clg(k).mu_angle(j), P.clg(k).sigma_angle(j));
             else
-                pa = G(k, 2);
                 prob = prob + lognormpdf(dataset(i, k, 1), ...
                        P.clg(k).theta(j, 1:4) * ...
                        [1; squeeze(dataset(i, pa, :))], P.clg(k).sigma_y(j));
