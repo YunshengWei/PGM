@@ -16,7 +16,7 @@
 %
 % Copyright (C) Daphne Koller, Stanford Univerity, 2012
 
-function P = CreateCliqueTreeHMMFast (F)
+function P = CreateCliqueTreeHMM(F)
 
 maxVar = max([F.var]);
 numNodes = maxVar - 1;

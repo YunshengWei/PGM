@@ -24,7 +24,7 @@ function [P, loglikelihood, ClassProb] = EM_cluster(poseData, G, InitialClassPro
 % Initialize variables
 N = size(poseData, 1);
 K = size(InitialClassProb, 2);
-Q = size(poseData, 2);
+Q = size(poseData, 2); % number of parts
 
 ClassProb = InitialClassProb;
 
@@ -111,6 +111,8 @@ for iter=1:maxIter
                   lognormpdf(poseData(:, i, 3), mu(:, 3), P.clg(i).sigma_angle(k));
       end
   end
+  logSumProb = logsumexp(ClassProb);
+  ClassProb = exp(bsxfun(@minus, ClassProb, logSumProb));
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
   % Compute log likelihood of dataset for this iteration
@@ -118,9 +120,7 @@ for iter=1:maxIter
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   % YOUR CODE HERE
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  logSumProb = logsumexp(ClassProb);
   loglikelihood(iter) = sum(logSumProb);
-  ClassProb = exp(bsxfun(@minus, ClassProb, logSumProb));
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
   % Print out loglikelihood
