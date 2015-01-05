@@ -9,9 +9,6 @@ function [mu sigma] = FitG(X, W)
 
 % Fit N(mu, sigma^2) to the empirical distribution
 
-mu = 0;
-sigma = 1;
-
 mu = W'*X/sum(W);
 v = W'*(X.*X)/sum(W) - mu^2;
 sigma = sqrt(v);
